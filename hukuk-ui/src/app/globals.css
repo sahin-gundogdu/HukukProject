@@ -1,0 +1,1299 @@
+/* ===== Global Styles — Hukuk Görev Yönetim Sistemi ===== */
+
+:root {
+    --primary: #1e3a5f;
+    --primary-light: #2a4f7f;
+    --primary-lighter: #e8eef5;
+    --accent: #0ea5e9;
+    --accent-light: #38bdf8;
+    --success: #10b981;
+    --warning: #f59e0b;
+    --danger: #ef4444;
+    --surface-0: #ffffff;
+    --surface-50: #f8fafc;
+    --surface-100: #f1f5f9;
+    --surface-200: #e2e8f0;
+    --surface-300: #cbd5e1;
+    --surface-400: #94a3b8;
+    --surface-500: #64748b;
+    --surface-600: #475569;
+    --surface-700: #334155;
+    --surface-800: #1e293b;
+    --surface-900: #0f172a;
+    --text-color: #1e293b;
+    --text-secondary: #64748b;
+    --border-color: #e2e8f0;
+    --radius: 12px;
+    --radius-sm: 8px;
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
+    --sidebar-width: 260px;
+    --sidebar-collapsed: 72px;
+    --topbar-height: 64px;
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Inter', 'Segoe UI', -apple-system, sans-serif;
+    color: var(--text-color);
+    background: var(--surface-50);
+    -webkit-font-smoothing: antialiased;
+}
+
+/* Old layout styles removed — now handled by Sakai SCSS */
+
+/* ===== Page Title ===== */
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.page-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.page-title i {
+    font-size: 1.3rem;
+}
+
+/* ===== Cards ===== */
+.stat-card {
+    background: var(--surface-0);
+    border-radius: var(--radius);
+    padding: 24px;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-color);
+    transition: var(--transition);
+}
+
+.stat-card:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+}
+
+.stat-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.stat-card-label {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.stat-card-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    color: white;
+}
+
+.stat-card-value {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--text-color);
+    line-height: 1;
+}
+
+.stat-card-footer {
+    margin-top: 8px;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+/* ===== Stat Card Colors ===== */
+.stat-primary .stat-card-icon {
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
+}
+
+.stat-accent .stat-card-icon {
+    background: linear-gradient(135deg, var(--accent), var(--accent-light));
+}
+
+.stat-success .stat-card-icon {
+    background: linear-gradient(135deg, var(--success), #34d399);
+}
+
+.stat-warning .stat-card-icon {
+    background: linear-gradient(135deg, var(--warning), #fbbf24);
+}
+
+.stat-danger .stat-card-icon {
+    background: linear-gradient(135deg, var(--danger), #f87171);
+}
+
+/* ===== Glassmorphism Panel ===== */
+.glass-panel {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(12px);
+    border-radius: var(--radius);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    box-shadow: var(--shadow-md);
+    padding: 24px;
+}
+
+/* ===== Table Custom ===== */
+.p-datatable .p-datatable-thead>tr>th {
+    background: var(--surface-50) !important;
+    border-bottom: 2px solid var(--border-color) !important;
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: var(--surface-600);
+}
+
+.p-datatable .p-datatable-tbody>tr {
+    transition: var(--transition);
+}
+
+.p-datatable .p-datatable-tbody>tr:hover {
+    background: var(--primary-lighter) !important;
+}
+
+/* ===== Overdue badge ===== */
+.overdue-badge {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    color: white;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.8;
+    }
+}
+
+/* ===== Loading ===== */
+.page-loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 400px;
+}
+
+/* ===== Empty State ===== */
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    color: var(--text-secondary);
+}
+
+.empty-state i {
+    font-size: 3rem;
+    margin-bottom: 16px;
+    opacity: 0.4;
+}
+
+.empty-state p {
+    font-size: 1.1rem;
+    font-weight: 500;
+}
+
+/* ===== Login Page ===== */
+.login-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, var(--primary) 0%, #0c2a4d 50%, #0f172a 100%);
+}
+
+.login-card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    border-radius: 20px;
+    padding: 48px;
+    width: 100%;
+    max-width: 440px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.login-title {
+    text-align: center;
+    margin-bottom: 32px;
+}
+
+.login-title h1 {
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: var(--primary);
+    margin-bottom: 8px;
+}
+
+.login-title p {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.login-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.login-field label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--surface-600);
+}
+
+.login-field input {
+    padding: 12px 16px;
+    border: 2px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    font-size: 0.95rem;
+    transition: var(--transition);
+    outline: none;
+}
+
+.login-field input:focus {
+    border-color: var(--primary);
+}
+
+.login-error {
+    color: var(--danger);
+    font-size: 0.85rem;
+    text-align: center;
+}
+
+/* ===== Detail Page ===== */
+.detail-header {
+    background: var(--surface-0);
+    border-radius: var(--radius);
+    padding: 24px;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-color);
+    margin-bottom: 24px;
+}
+
+.detail-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 16px;
+    margin-top: 16px;
+}
+
+.detail-field {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.detail-field-label {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.detail-field-value {
+    font-size: 0.95rem;
+    font-weight: 500;
+}
+
+/* ===== Comments ===== */
+.comment-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.comment-item {
+    background: var(--surface-50);
+    border-radius: var(--radius-sm);
+    padding: 16px;
+    border: 1px solid var(--border-color);
+}
+
+.comment-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+
+.comment-author {
+    font-weight: 600;
+    color: var(--primary);
+    font-size: 0.9rem;
+}
+
+.comment-date {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+.comment-body {
+    font-size: 0.9rem;
+    line-height: 1.6;
+}
+
+/* ===== Notification ===== */
+.notification-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.notification-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 16px;
+    background: var(--surface-0);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-color);
+    transition: var(--transition);
+    cursor: pointer;
+}
+
+.notification-item:hover {
+    box-shadow: var(--shadow-sm);
+}
+
+.notification-item.unread {
+    border-left: 4px solid var(--accent);
+    background: var(--primary-lighter);
+}
+
+.notification-icon {
+    font-size: 1.4rem;
+    color: var(--accent);
+    margin-top: 2px;
+}
+
+.notification-content {
+    flex: 1;
+}
+
+.notification-title {
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin-bottom: 4px;
+}
+
+.notification-message {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+.notification-time {
+    font-size: 0.75rem;
+    color: var(--surface-400);
+    margin-top: 4px;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+    .stat-card-value {
+        font-size: 1.5rem;
+    }
+
+    .login-card {
+        margin: 16px;
+        padding: 32px;
+    }
+
+    .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+}
+
+/* =========================================================
+   PrimeReact Component Overrides — Premium Styling
+   ========================================================= */
+
+/* ===== Inputs, Textareas ===== */
+.p-inputtext,
+.p-password input,
+.p-inputnumber input {
+    width: 100% !important;
+    height: 44px !important;
+    padding: 10px 14px !important;
+    font-size: 0.95rem !important;
+    border: 2px solid var(--border-color) !important;
+    border-radius: var(--radius-sm) !important;
+    background: var(--surface-0) !important;
+    color: var(--text-color) !important;
+    transition: var(--transition) !important;
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+.p-inputtextarea,
+textarea.p-inputtextarea {
+    width: 100% !important;
+    min-height: 88px !important;
+    padding: 10px 14px !important;
+    font-size: 0.95rem !important;
+    border: 2px solid var(--border-color) !important;
+    border-radius: var(--radius-sm) !important;
+    background: var(--surface-0) !important;
+    color: var(--text-color) !important;
+    transition: var(--transition) !important;
+    outline: none !important;
+    box-shadow: none !important;
+    resize: vertical;
+    line-height: 1.5;
+}
+
+.p-inputtext:hover,
+.p-password input:hover,
+.p-inputtextarea:hover {
+    border-color: var(--surface-400) !important;
+}
+
+.p-inputtext:focus,
+.p-inputtext:enabled:focus,
+.p-password input:focus,
+.p-inputtextarea:focus {
+    border-color: var(--primary) !important;
+    box-shadow: 0 0 0 3px rgba(30, 58, 95, 0.1) !important;
+}
+
+/* ===== Dropdown — PrimeReact 10 ===== */
+.p-dropdown {
+    width: 100% !important;
+    min-height: 44px !important;
+    height: auto !important;
+    display: flex !important;
+    align-items: center !important;
+    border: 2px solid var(--border-color) !important;
+    border-radius: var(--radius-sm) !important;
+    background: var(--surface-0) !important;
+    transition: var(--transition) !important;
+    outline: none !important;
+    box-shadow: none !important;
+    cursor: pointer !important;
+    padding: 0 !important;
+}
+
+.p-dropdown:hover {
+    border-color: var(--surface-400) !important;
+}
+
+.p-dropdown.p-focus,
+.p-dropdown:focus,
+.p-dropdown.p-inputwrapper-focus {
+    border-color: var(--primary) !important;
+    box-shadow: 0 0 0 3px rgba(30, 58, 95, 0.1) !important;
+}
+
+.p-dropdown .p-dropdown-label {
+    padding: 10px 14px !important;
+    font-size: 0.95rem !important;
+    color: var(--text-color) !important;
+    display: flex !important;
+    align-items: center !important;
+    flex: 1 !important;
+    min-height: 40px !important;
+}
+
+.p-dropdown .p-dropdown-label.p-placeholder {
+    color: var(--surface-400) !important;
+}
+
+.p-dropdown .p-dropdown-trigger {
+    width: 40px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    color: var(--surface-500) !important;
+    border-left: 1px solid var(--border-color) !important;
+    background: var(--surface-50) !important;
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0 !important;
+    flex-shrink: 0 !important;
+}
+
+.p-dropdown .p-dropdown-clear-icon {
+    color: var(--surface-400) !important;
+    margin-right: 4px !important;
+}
+
+/* Dropdown Panel (açılan liste) */
+.p-dropdown-panel {
+    border-radius: var(--radius-sm) !important;
+    box-shadow: var(--shadow-lg) !important;
+    border: 1px solid var(--border-color) !important;
+    margin-top: 4px !important;
+    overflow: hidden !important;
+}
+
+.p-dropdown-panel .p-dropdown-header {
+    padding: 10px 14px !important;
+    border-bottom: 1px solid var(--border-color) !important;
+    background: var(--surface-50) !important;
+}
+
+.p-dropdown-panel .p-dropdown-header .p-dropdown-filter {
+    height: 38px !important;
+    padding: 8px 12px !important;
+    font-size: 0.9rem !important;
+}
+
+.p-dropdown-items {
+    padding: 4px 0 !important;
+}
+
+.p-dropdown-items .p-dropdown-item {
+    padding: 10px 16px !important;
+    font-size: 0.9rem !important;
+    transition: background 0.15s !important;
+    border-radius: 0 !important;
+    margin: 0 !important;
+}
+
+.p-dropdown-items .p-dropdown-item:hover {
+    background: var(--primary-lighter) !important;
+    color: var(--text-color) !important;
+}
+
+.p-dropdown-items .p-dropdown-item.p-highlight {
+    background: var(--primary) !important;
+    color: white !important;
+}
+
+.p-dropdown-items .p-dropdown-empty-message {
+    padding: 10px 16px !important;
+    font-size: 0.9rem !important;
+    color: var(--text-secondary) !important;
+}
+
+/* ===== MultiSelect — PrimeReact 10 ===== */
+.p-multiselect {
+    width: 100% !important;
+    min-height: 44px !important;
+    height: auto !important;
+    display: flex !important;
+    align-items: center !important;
+    border: 2px solid var(--border-color) !important;
+    border-radius: var(--radius-sm) !important;
+    background: var(--surface-0) !important;
+    transition: var(--transition) !important;
+    outline: none !important;
+    box-shadow: none !important;
+    cursor: pointer !important;
+    padding: 0 !important;
+}
+
+.p-multiselect:hover {
+    border-color: var(--surface-400) !important;
+}
+
+.p-multiselect.p-focus,
+.p-multiselect.p-inputwrapper-focus {
+    border-color: var(--primary) !important;
+    box-shadow: 0 0 0 3px rgba(30, 58, 95, 0.1) !important;
+}
+
+.p-multiselect .p-multiselect-label-container,
+.p-multiselect .p-multiselect-label {
+    padding: 8px 14px !important;
+    font-size: 0.95rem !important;
+    display: flex !important;
+    align-items: center !important;
+    flex-wrap: wrap !important;
+    gap: 4px !important;
+    flex: 1 !important;
+    min-height: 40px !important;
+}
+
+.p-multiselect .p-multiselect-label.p-placeholder {
+    color: var(--surface-400) !important;
+}
+
+.p-multiselect .p-multiselect-trigger {
+    width: 40px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    color: var(--surface-500) !important;
+    border-left: 1px solid var(--border-color) !important;
+    background: var(--surface-50) !important;
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0 !important;
+    flex-shrink: 0 !important;
+}
+
+.p-multiselect-panel {
+    border-radius: var(--radius-sm) !important;
+    box-shadow: var(--shadow-lg) !important;
+    border: 1px solid var(--border-color) !important;
+    margin-top: 4px !important;
+}
+
+.p-multiselect-items .p-multiselect-item {
+    padding: 10px 16px !important;
+    font-size: 0.9rem !important;
+    transition: background 0.15s !important;
+}
+
+.p-multiselect-items .p-multiselect-item:hover {
+    background: var(--primary-lighter) !important;
+}
+
+.p-multiselect-items .p-multiselect-item.p-highlight {
+    background: var(--primary) !important;
+    color: white !important;
+}
+
+/* MultiSelect Chips */
+.p-multiselect-token {
+    background: var(--primary) !important;
+    color: white !important;
+    border-radius: 16px !important;
+    padding: 3px 10px !important;
+    font-size: 0.8rem !important;
+    font-weight: 500 !important;
+}
+
+.p-multiselect-token-icon {
+    color: rgba(255, 255, 255, 0.7) !important;
+    margin-left: 6px !important;
+}
+
+/* ===== Calendar — PrimeReact 10 ===== */
+.p-calendar {
+    width: 100% !important;
+    display: flex !important;
+}
+
+.p-calendar .p-inputtext {
+    flex: 1 !important;
+    border-radius: var(--radius-sm) 0 0 var(--radius-sm) !important;
+}
+
+.p-calendar .p-datepicker-trigger,
+.p-calendar .p-button {
+    min-height: 44px !important;
+    width: 44px !important;
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0 !important;
+    border: 2px solid var(--border-color) !important;
+    border-left: none !important;
+}
+
+.p-calendar:not(.p-calendar-w-btn) .p-inputtext {
+    border-radius: var(--radius-sm) !important;
+}
+
+.p-datepicker {
+    border-radius: var(--radius-sm) !important;
+    box-shadow: var(--shadow-lg) !important;
+    border: 1px solid var(--border-color) !important;
+    padding: 12px !important;
+}
+
+/* ===== Buttons ===== */
+.p-button {
+    min-height: 42px !important;
+    padding: 10px 20px !important;
+    font-size: 0.9rem !important;
+    font-weight: 600 !important;
+    border-radius: var(--radius-sm) !important;
+    transition: var(--transition) !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    cursor: pointer !important;
+}
+
+.p-button:not(.p-button-outlined):not(.p-button-text):not(.p-button-link) {
+    background: linear-gradient(135deg, var(--primary), var(--primary-light)) !important;
+    border: none !important;
+    color: white !important;
+    box-shadow: 0 2px 8px rgba(30, 58, 95, 0.25) !important;
+}
+
+.p-button:not(.p-button-outlined):not(.p-button-text):not(.p-button-link):hover {
+    box-shadow: 0 4px 16px rgba(30, 58, 95, 0.35) !important;
+    transform: translateY(-1px);
+}
+
+.p-button.p-button-outlined {
+    border: 2px solid var(--primary) !important;
+    color: var(--primary) !important;
+    background: transparent !important;
+}
+
+.p-button.p-button-outlined:hover {
+    background: var(--primary-lighter) !important;
+}
+
+.p-button.p-button-text {
+    background: transparent !important;
+    border: none !important;
+    color: var(--surface-600) !important;
+    box-shadow: none !important;
+    padding: 8px !important;
+    min-height: auto !important;
+}
+
+.p-button.p-button-text:hover {
+    background: var(--surface-100) !important;
+    color: var(--primary) !important;
+}
+
+.p-button.p-button-sm {
+    min-height: 34px !important;
+    padding: 6px 14px !important;
+    font-size: 0.85rem !important;
+}
+
+.p-button.p-button-success:not(.p-button-outlined):not(.p-button-text) {
+    background: linear-gradient(135deg, var(--success), #34d399) !important;
+}
+
+.p-button.p-button-danger:not(.p-button-outlined):not(.p-button-text) {
+    background: linear-gradient(135deg, var(--danger), #f87171) !important;
+}
+
+.p-button.p-button-warning:not(.p-button-outlined):not(.p-button-text) {
+    background: linear-gradient(135deg, var(--warning), #fbbf24) !important;
+}
+
+/* ===== Dialog ===== */
+.p-dialog {
+    border-radius: var(--radius) !important;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2) !important;
+    border: none !important;
+    overflow: hidden;
+}
+
+.p-dialog .p-dialog-header {
+    background: var(--surface-0) !important;
+    padding: 20px 24px !important;
+    border-bottom: 1px solid var(--border-color) !important;
+}
+
+.p-dialog .p-dialog-header .p-dialog-title {
+    font-size: 1.15rem !important;
+    font-weight: 700 !important;
+    color: var(--primary) !important;
+}
+
+.p-dialog .p-dialog-content {
+    padding: 24px !important;
+    background: var(--surface-0) !important;
+}
+
+.p-dialog .p-dialog-footer {
+    padding: 16px 24px !important;
+    background: var(--surface-50) !important;
+    border-top: 1px solid var(--border-color) !important;
+}
+
+.p-dialog-mask {
+    backdrop-filter: blur(4px) !important;
+}
+
+/* ===== TabView ===== */
+.p-tabview .p-tabview-nav {
+    border-bottom: 2px solid var(--border-color) !important;
+    background: transparent !important;
+    padding: 0 !important;
+    gap: 0 !important;
+}
+
+.p-tabview .p-tabview-nav li .p-tabview-nav-link {
+    padding: 14px 24px !important;
+    font-size: 0.9rem !important;
+    font-weight: 600 !important;
+    color: var(--text-secondary) !important;
+    border: none !important;
+    border-bottom: 3px solid transparent !important;
+    background: transparent !important;
+    transition: var(--transition) !important;
+    margin-bottom: -2px;
+}
+
+.p-tabview .p-tabview-nav li .p-tabview-nav-link:hover {
+    color: var(--primary) !important;
+    background: var(--primary-lighter) !important;
+}
+
+.p-tabview .p-tabview-nav li.p-highlight .p-tabview-nav-link {
+    color: var(--primary) !important;
+    border-bottom-color: var(--primary) !important;
+    background: transparent !important;
+}
+
+.p-tabview .p-tabview-panels {
+    padding: 24px 0 !important;
+    background: transparent !important;
+}
+
+/* ===== DataTable Enhancements ===== */
+.p-datatable {
+    border-radius: var(--radius) !important;
+    overflow: hidden;
+}
+
+.p-datatable .p-datatable-thead>tr>th {
+    background: var(--surface-50) !important;
+    border-bottom: 2px solid var(--border-color) !important;
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: var(--surface-600);
+    padding: 14px 16px !important;
+}
+
+.p-datatable .p-datatable-tbody>tr>td {
+    padding: 12px 16px !important;
+    font-size: 0.9rem !important;
+    border-bottom: 1px solid var(--surface-100) !important;
+}
+
+.p-datatable .p-datatable-tbody>tr {
+    transition: var(--transition);
+}
+
+.p-datatable .p-datatable-tbody>tr:hover {
+    background: var(--primary-lighter) !important;
+}
+
+.p-datatable .p-paginator {
+    padding: 12px 16px !important;
+    border-top: 1px solid var(--border-color) !important;
+    background: var(--surface-50) !important;
+}
+
+/* ===== Tags ===== */
+.p-tag {
+    padding: 5px 12px !important;
+    font-size: 0.8rem !important;
+    font-weight: 600 !important;
+    border-radius: 20px !important;
+    letter-spacing: 0.02em;
+}
+
+/* ===== Calendar ===== */
+.p-calendar {
+    width: 100% !important;
+}
+
+.p-datepicker {
+    border-radius: var(--radius-sm) !important;
+    box-shadow: var(--shadow-lg) !important;
+    border: 1px solid var(--border-color) !important;
+}
+
+/* ===== Checkbox / Radio ===== */
+.p-checkbox .p-checkbox-box,
+.p-radiobutton .p-radiobutton-box {
+    border: 2px solid var(--border-color) !important;
+    width: 22px !important;
+    height: 22px !important;
+    border-radius: 6px !important;
+    transition: var(--transition) !important;
+}
+
+.p-checkbox .p-checkbox-box.p-highlight,
+.p-radiobutton .p-radiobutton-box.p-highlight {
+    background: var(--primary) !important;
+    border-color: var(--primary) !important;
+}
+
+/* ===== Toast ===== */
+.p-toast {
+    z-index: 10000 !important;
+}
+
+.p-toast .p-toast-message {
+    border-radius: var(--radius-sm) !important;
+    box-shadow: var(--shadow-lg) !important;
+}
+
+/* ===== ConfirmDialog ===== */
+.p-confirm-dialog .p-confirm-dialog-message {
+    font-size: 0.95rem !important;
+    line-height: 1.6 !important;
+}
+
+/* ===== ProgressSpinner ===== */
+.p-progress-spinner-circle {
+    stroke: var(--primary) !important;
+}
+
+/* ===== Form Field Helper Classes ===== */
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 16px;
+}
+
+.form-label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--surface-600);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.form-label .required {
+    color: var(--danger);
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 16px;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 24px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border-color);
+}
+
+/* ===== Filter Bar ===== */
+.filter-bar {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 12px;
+    align-items: end;
+    margin-bottom: 20px;
+}
+
+.filter-bar label {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-bottom: 4px;
+    color: var(--text-secondary);
+}
+
+/* ===== Scrollbar ===== */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--surface-100);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--surface-300);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--surface-400);
+}
+
+/* ===== Tooltip ===== */
+.p-tooltip .p-tooltip-text {
+    font-size: 0.8rem !important;
+    padding: 6px 12px !important;
+    border-radius: 6px !important;
+    box-shadow: var(--shadow-md) !important;
+}
+
+/* ===== Badge (Topbar) ===== */
+.p-badge {
+    min-width: 20px !important;
+    height: 20px !important;
+    font-size: 0.7rem !important;
+    font-weight: 700 !important;
+    border-radius: 10px !important;
+}
+
+/* ===== InputGroup ===== */
+.p-inputgroup .p-inputgroup-addon {
+    min-width: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--surface-100) !important;
+    border: 2px solid var(--border-color) !important;
+    color: var(--surface-500);
+}
+
+/* ===== Kanban Board ===== */
+.kanban-board {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 16px;
+    min-height: 60vh;
+    overflow-x: auto;
+    padding-bottom: 8px;
+}
+
+.kanban-column {
+    display: flex;
+    flex-direction: column;
+    border-radius: 12px;
+    background: var(--surface-card);
+    border: 1px solid var(--surface-border);
+    min-width: 240px;
+    transition: box-shadow 0.2s, border-color 0.2s;
+    overflow: hidden;
+}
+
+.kanban-column.drag-over {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15), 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+
+.kanban-column-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 16px;
+    border-bottom: 3px solid;
+    background: var(--surface-card);
+}
+
+.kanban-column-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 700;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: var(--surface-700);
+}
+
+.kanban-column-title i {
+    font-size: 1rem;
+}
+
+.kanban-column-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 24px;
+    height: 24px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: white;
+    padding: 0 6px;
+}
+
+.kanban-column-body {
+    flex: 1;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-height: 100px;
+    overflow-y: auto;
+    max-height: calc(100vh - 320px);
+}
+
+/* Kanban Card */
+.kanban-card {
+    position: relative;
+    background: var(--surface-card);
+    border-radius: 10px;
+    border: 1px solid var(--surface-border);
+    overflow: hidden;
+    cursor: grab;
+    transition: transform 0.15s, box-shadow 0.15s;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.kanban-card:active {
+    cursor: grabbing;
+}
+
+.kanban-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    border-color: var(--surface-300);
+}
+
+.kanban-card-priority-line {
+    height: 3px;
+    width: 100%;
+}
+
+.kanban-card-content {
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.kanban-card-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.kanban-card-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--surface-900);
+    text-decoration: none;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    transition: color 0.15s;
+}
+
+.kanban-card-title:hover {
+    color: var(--primary-color);
+}
+
+.kanban-card-tags {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+}
+
+.kanban-card-etiketler {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+}
+
+.kanban-etiket {
+    font-size: 0.65rem;
+    padding: 2px 6px;
+    border-radius: 10px;
+    background: var(--surface-100);
+    color: var(--surface-600);
+    font-weight: 500;
+}
+
+.kanban-card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding-top: 4px;
+    border-top: 1px solid var(--surface-100);
+}
+
+.kanban-card-assignee {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.75rem;
+    color: var(--surface-500);
+}
+
+.kanban-card-date {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.7rem;
+    color: var(--surface-400);
+}
+
+.kanban-card-date.overdue {
+    color: #ef4444;
+    font-weight: 600;
+}
+
+.kanban-card-meta {
+    display: flex;
+    gap: 12px;
+    font-size: 0.7rem;
+    color: var(--surface-400);
+}
+
+.kanban-card-meta span {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+}
+
+.kanban-card-meta i {
+    font-size: 0.7rem;
+}
+
+/* Kanban Empty */
+.kanban-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 32px 16px;
+    color: var(--surface-300);
+    font-size: 0.85rem;
+}
+
+.kanban-empty i {
+    font-size: 2rem;
+}
+
+/* View Toggle */
+.view-toggle .p-button {
+    min-height: 36px !important;
+    padding: 6px 14px !important;
+    font-size: 0.85rem !important;
+}
+
+/* Kanban Responsive */
+@media (max-width: 1200px) {
+    .kanban-board {
+        grid-template-columns: repeat(5, minmax(220px, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    .kanban-board {
+        grid-template-columns: repeat(5, minmax(200px, 1fr));
+    }
+}
