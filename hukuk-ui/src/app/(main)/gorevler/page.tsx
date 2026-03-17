@@ -18,6 +18,7 @@ import KanbanBoard from './KanbanBoard';
 import AltGorevForm from './AltGorevForm';
 import Link from 'next/link';
 import { useQueryClient } from '@tanstack/react-query';
+import { saveAs } from 'file-saver';
 
 type ViewMode = 'liste' | 'kanban';
 
@@ -218,6 +219,70 @@ export default function GorevlerPage() {
     }, [aramaMetni]);
 
     const { data: gorevler, isLoading } = useGorevler({ ...filters, aramaMetni: debouncedAramaMetni || undefined });
+
+    const formatExportData = () => {
+        return (gorevler || []).map(g => ({
+            baslik: g.baslik,
+            durum: DURUM_LABELS[g.durum],
+            oncelik: ONCELIK_LABELS[g.oncelik],
+            atanan: g.atananKullaniciAdi ?? g.atananGrupAdi ?? '-',
+            tip: g.gorevTipiAdi ?? '-',
+            baslangic: formatDate(g.baslangicTarihi),
+            bitis: formatDate(g.bitisTarihi)
+        }));
+    };
+
+    const exportExcel = () => {
+        import('xlsx').then((xlsx) => {
+            const data = formatExportData();
+            const worksheet = xlsx.utils.json_to_sheet(data);
+            const workbook = { Sheets: { 'Görevler': worksheet }, SheetNames: ['Görevler'] };
+            const excelBuffer = xlsx.write(workbook, { bookType: 'xlsx', type: 'array' });
+            saveAsExcelFile(excelBuffer, 'gorevler');
+        });
+    };
+
+    const saveAsExcelFile = (buffer: any, fileName: string) => {
+        let EXCEL_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
+        let EXCEL_EXTENSION = '.xlsx';
+        const data = new Blob([buffer], { type: EXCEL_TYPE });
+        saveAs(data, fileName + '_export_' + new Date().getTime() + EXCEL_EXTENSION);
+    };
+
+    const exportPdf = () => {
+        import('jspdf').then((jsPDF) => {
+            import('jspdf-autotable').then((autoTable) => {
+                const doc = new jsPDF.default('l', 'mm', 'a4');
+                const data = formatExportData();
+                const columns = [
+                    { header: 'Başlık', dataKey: 'baslik' },
+                    { header: 'Durum', dataKey: 'durum' },
+                    { header: 'Öncelik', dataKey: 'oncelik' },
+                    { header: 'Atanan', dataKey: 'atanan' },
+                    { header: 'Tip', dataKey: 'tip' },
+                    { header: 'Başlangıç', dataKey: 'baslangic' },
+                    { header: 'Bitiş', dataKey: 'bitis' }
+                ];
+
+                autoTable.default(doc, {
+                    columns: columns,
+                    body: data,
+                    headStyles: { fillColor: [30, 58, 95] },
+                    styles: { fontSize: 8 }
+                });
+
+                doc.save(`gorevler_export_${new Date().getTime()}.pdf`);
+            });
+        });
+    };
+
+    const dtHeader = (
+        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px', padding: '10px' }}>
+            <Button type="button" icon="pi pi-file-excel" className="p-button-success p-button-rounded" onClick={exportExcel} tooltip="Excel İndir" />
+            <Button type="button" icon="pi pi-file-pdf" className="p-button-danger p-button-rounded" onClick={exportPdf} tooltip="PDF İndir" />
+        </div>
+    );
+
     const deleteGorev = useDeleteGorev();
 
     const durumOptions = Object.values(GorevDurumu).filter(v => typeof v === 'number').map(v => ({
@@ -398,6 +463,7 @@ export default function GorevlerPage() {
                     <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
                         <DataTable
                             value={gorevler}
+                            header={dtHeader}
                             paginator rows={15}
                             stripedRows
                             emptyMessage="Görev bulunamadı."

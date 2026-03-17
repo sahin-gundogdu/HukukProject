@@ -1,4 +1,5 @@
 using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using HukukGorev.Application.DTOs;
 using HukukGorev.Application.UnitOfWork;
 using HukukGorev.Domain.Enums;
@@ -34,15 +35,6 @@ public class GetAllGorevHandler : IRequestHandler<GetAllGorevRequest, List<Gorev
     public async Task<List<GorevDto>> Handle(GetAllGorevRequest request, CancellationToken cancellationToken)
     {
         var query = _unitOfWork.GorevReadRepository.GetAllQueryable()
-            .Include(g => g.GorevTipi)
-            .Include(g => g.AtananKullanici)
-            .Include(g => g.AtananGrup)
-            .Include(g => g.OlusturanKullanici)
-            .Include(g => g.UzerineAlanKullanici)
-            .Include(g => g.AltGorevler)
-            .Include(g => g.Yorumlar)
-            .Include(g => g.Dosyalar)
-            .Include(g => g.GorevEtiketler).ThenInclude(ge => ge.Etiket)
             .Where(g => g.Aktif);
 
         if (request.Durum.HasValue)
@@ -72,7 +64,9 @@ public class GetAllGorevHandler : IRequestHandler<GetAllGorevRequest, List<Gorev
         if (request.SadeceGecikenler == true)
             query = query.Where(g => g.BitisTarihi.HasValue && g.BitisTarihi < DateTime.UtcNow && g.Durum != GorevDurumu.Tamamlandi && g.Durum != GorevDurumu.Iptal);
 
-        var gorevler = await query.OrderByDescending(g => g.CreatedAt).ToListAsync(cancellationToken);
-        return _mapper.Map<List<GorevDto>>(gorevler);
+        return await query
+            .OrderByDescending(g => g.CreatedAt)
+            .ProjectTo<GorevDto>(_mapper.ConfigurationProvider)
+            .ToListAsync(cancellationToken);
     }
 }
