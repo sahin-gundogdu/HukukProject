@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useGorevler, useDeleteGorev, useGorev, useDeleteAltGorev, useUpdateAltGorev } from '@/layout/hooks/useApi';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
@@ -203,11 +203,21 @@ export default function GorevlerPage() {
     const [viewMode, setViewMode] = useState<ViewMode>('liste');
     const [filters, setFilters] = useState<any>({});
     const [aramaMetni, setAramaMetni] = useState('');
+    const [debouncedAramaMetni, setDebouncedAramaMetni] = useState('');
     const [showForm, setShowForm] = useState(false);
     const [selectedGorev, setSelectedGorev] = useState<GorevDto | null>(null);
     const [expandedRows, setExpandedRows] = useState<any>({});
 
-    const { data: gorevler, isLoading } = useGorevler({ ...filters, aramaMetni: aramaMetni || undefined });
+    // Debounce effect: Wait for 500ms after last keystroke before triggering search
+    useEffect(() => {
+        const handler = setTimeout(() => {
+            setDebouncedAramaMetni(aramaMetni);
+        }, 500);
+
+        return () => clearTimeout(handler);
+    }, [aramaMetni]);
+
+    const { data: gorevler, isLoading } = useGorevler({ ...filters, aramaMetni: debouncedAramaMetni || undefined });
     const deleteGorev = useDeleteGorev();
 
     const durumOptions = Object.values(GorevDurumu).filter(v => typeof v === 'number').map(v => ({
@@ -318,9 +328,6 @@ export default function GorevlerPage() {
             if (gorev) acc[k] = true;
             return acc;
         }, {});
-
-    if (isLoading) return <div className="page-loading"><ProgressSpinner /></div>;
-
     return (
         <div>
             <ConfirmDialog />
@@ -374,36 +381,49 @@ export default function GorevlerPage() {
                 </div>
             </div>
 
-            {/* Content */}
-            {viewMode === 'liste' ? (
-                <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
-                    <DataTable
-                        value={gorevler}
-                        paginator rows={15}
-                        stripedRows
-                        emptyMessage="Görev bulunamadı."
-                        rowHover
-                        sortField="createdAt"
-                        sortOrder={-1}
-                        style={{ borderRadius: 'var(--radius)' }}
-                        rowExpansionTemplate={rowExpansionTemplate}
-                        expandedRows={dtExpandedRows}
-                        dataKey="id"
-                    >
-                        <Column body={baslikTemplate} header="Başlık" sortField="baslik" sortable style={{ minWidth: '250px' }} />
-                        <Column body={durumTemplate} header="Durum" sortField="durum" sortable style={{ width: '130px' }} />
-                        <Column body={oncelikTemplate} header="Öncelik" sortField="oncelik" sortable style={{ width: '110px' }} />
-                        <Column body={atananTemplate} header="Atanan" style={{ width: '160px' }} />
-                        <Column field="gorevTipiAdi" header="Tip" style={{ width: '120px' }} />
-                        <Column body={etiketTemplate} header="Etiketler" style={{ width: '180px' }} />
-                        <Column body={(row: GorevDto) => formatDate(row.baslangicTarihi)} header="Başlangıç" sortField="baslangicTarihi" sortable style={{ width: '110px' }} />
-                        <Column body={(row: GorevDto) => formatDate(row.bitisTarihi)} header="Bitiş" sortField="bitisTarihi" sortable style={{ width: '110px' }} />
-                        <Column body={actionTemplate} header="" style={{ width: '90px' }} />
-                    </DataTable>
-                </div>
-            ) : (
-                <KanbanBoard gorevler={gorevler || []} />
-            )}
+            {/* Content Area with Loading Indicator */}
+            <div style={{ position: 'relative', minHeight: '400px' }}>
+                {isLoading && (
+                    <div style={{
+                        position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
+                        background: 'rgba(255,255,255,0.5)', zIndex: 10,
+                        display: 'flex', justifyContent: 'center', alignItems: 'center',
+                        borderRadius: 'var(--radius)', backdropFilter: 'blur(2px)'
+                    }}>
+                        <ProgressSpinner />
+                    </div>
+                )}
+
+                {viewMode === 'liste' ? (
+                    <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
+                        <DataTable
+                            value={gorevler}
+                            paginator rows={15}
+                            stripedRows
+                            emptyMessage="Görev bulunamadı."
+                            rowHover
+                            sortField="createdAt"
+                            sortOrder={-1}
+                            style={{ borderRadius: 'var(--radius)' }}
+                            rowExpansionTemplate={rowExpansionTemplate}
+                            expandedRows={dtExpandedRows}
+                            dataKey="id"
+                        >
+                            <Column body={baslikTemplate} header="Başlık" sortField="baslik" sortable style={{ minWidth: '250px' }} />
+                            <Column body={durumTemplate} header="Durum" sortField="durum" sortable style={{ width: '130px' }} />
+                            <Column body={oncelikTemplate} header="Öncelik" sortField="oncelik" sortable style={{ width: '110px' }} />
+                            <Column body={atananTemplate} header="Atanan" style={{ width: '160px' }} />
+                            <Column field="gorevTipiAdi" header="Tip" style={{ width: '120px' }} />
+                            <Column body={etiketTemplate} header="Etiketler" style={{ width: '180px' }} />
+                            <Column body={(row: GorevDto) => formatDate(row.baslangicTarihi)} header="Başlangıç" sortField="baslangicTarihi" sortable style={{ width: '110px' }} />
+                            <Column body={(row: GorevDto) => formatDate(row.bitisTarihi)} header="Bitiş" sortField="bitisTarihi" sortable style={{ width: '110px' }} />
+                            <Column body={actionTemplate} header="" style={{ width: '90px' }} />
+                        </DataTable>
+                    </div>
+                ) : (
+                    <KanbanBoard gorevler={gorevler || []} />
+                )}
+            </div>
 
             {/* Create/Edit Dialog */}
             <Dialog header={selectedGorev ? 'Görev Düzenle' : 'Yeni Görev'} visible={showForm}
