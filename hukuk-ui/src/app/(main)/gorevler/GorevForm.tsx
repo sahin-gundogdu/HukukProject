@@ -45,6 +45,7 @@ export default function GorevForm({ gorev, onClose }: Props) {
     const { user: currentUser } = useAuth();
 
     const atamaTipi = watch('atamaTipi');
+    const gorevTipiId = watch('gorevTipiId');
 
     const oncelikOptions = Object.values(OncelikSeviyesi).filter(v => typeof v === 'number').map(v => ({
         label: ONCELIK_LABELS[v as OncelikSeviyesi], value: v,
@@ -88,24 +89,25 @@ export default function GorevForm({ gorev, onClose }: Props) {
                 <div>
                     <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, marginBottom: '4px' }}>Öncelik</label>
                     <Controller name="oncelik" control={control}
-                        render={({ field }) => <Dropdown {...field} options={oncelikOptions} style={{ width: '100%' }} appendTo="self" />} />
+                        render={({ field }) => <Dropdown {...field} options={oncelikOptions} style={{ width: '100%' }} />} />
                 </div>
 
                 {gorev && (
                     <div>
                         <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, marginBottom: '4px' }}>Durum</label>
                         <Controller name="durum" control={control}
-                            render={({ field }) => <Dropdown {...field} options={durumOptions} style={{ width: '100%' }} appendTo="self" />} />
+                            render={({ field }) => <Dropdown {...field} options={durumOptions} style={{ width: '100%' }} />} />
                     </div>
                 )}
 
                 <div>
                     <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, marginBottom: '4px' }}>Görev Tipi</label>
-                    <Controller name="gorevTipiId" control={control}
-                        render={({ field }) => (
-                            <Dropdown {...field} options={gorevTipleri?.map(t => ({ label: t.ad, value: t.id })) ?? []}
-                                placeholder="Seçiniz" showClear style={{ width: '100%' }} appendTo="self" />
-                        )} />
+                    <Dropdown
+                        value={gorevTipiId}
+                        options={gorevTipleri?.map(t => ({ label: t.ad, value: t.id })) ?? []}
+                        onChange={e => setValue('gorevTipiId', e.value)}
+                        placeholder="Seçiniz" showClear style={{ width: '100%' }}
+                    />
                 </div>
 
                 <div>
@@ -113,7 +115,7 @@ export default function GorevForm({ gorev, onClose }: Props) {
                     <Controller name="bitisTarihi" control={control}
                         render={({ field }) => (
                             <Calendar {...field} dateFormat="dd/mm/yy" placeholder="Tarih seçin" showIcon
-                                icon={() => <i className="pi pi-calendar" style={{ color: 'white' }} />} style={{ width: '100%' }} appendTo="self" />
+                                icon={() => <i className="pi pi-calendar" style={{ color: 'white' }} />} style={{ width: '100%' }} />
                         )} />
                 </div>
 
@@ -124,7 +126,7 @@ export default function GorevForm({ gorev, onClose }: Props) {
                             <Dropdown {...field} options={[
                                 { label: 'Kişi', value: AtamaTipi.Kisi },
                                 { label: 'Grup', value: AtamaTipi.Grup },
-                            ]} style={{ width: '100%' }} appendTo="self" />
+                            ]} style={{ width: '100%' }} />
                         )} />
                 </div>
 
@@ -141,7 +143,7 @@ export default function GorevForm({ gorev, onClose }: Props) {
 
                                 return (
                                     <Dropdown {...field} options={assignableUsers.map(k => ({ label: `${k.ad} ${k.soyad}`, value: k.id }))}
-                                        placeholder="Kişi seçin" showClear filter style={{ width: '100%' }} appendTo="self" />
+                                        placeholder="Kişi seçin" showClear filter style={{ width: '100%' }} />
                                 );
                             }} />
                     </div>
@@ -151,7 +153,7 @@ export default function GorevForm({ gorev, onClose }: Props) {
                         <Controller name="atananGrupId" control={control}
                             render={({ field }) => (
                                 <Dropdown {...field} options={gruplar?.map(g => ({ label: g.ad, value: g.id })) ?? []}
-                                    placeholder="Grup seçin" showClear style={{ width: '100%' }} appendTo="self" />
+                                    placeholder="Grup seçin" showClear style={{ width: '100%' }} />
                             )} />
                     </div>
                 )}
@@ -162,7 +164,7 @@ export default function GorevForm({ gorev, onClose }: Props) {
                 <Controller name="etiketIds" control={control}
                     render={({ field }) => (
                         <MultiSelect {...field} options={etiketler?.map(e => ({ label: e.ad, value: e.id })) ?? []}
-                            placeholder="Etiket seçin" display="chip" style={{ width: '100%' }} appendTo="self" />
+                            placeholder="Etiket seçin" display="chip" style={{ width: '100%' }} />
                     )} />
             </div>
 
