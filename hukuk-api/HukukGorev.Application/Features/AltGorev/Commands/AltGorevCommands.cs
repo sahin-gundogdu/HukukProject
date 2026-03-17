@@ -3,6 +3,7 @@ using HukukGorev.Application.UnitOfWork;
 using HukukGorev.Domain.Entities;
 using HukukGorev.Domain.Enums;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace HukukGorev.Application.Features.AltGorev.Commands;
 
@@ -11,9 +12,12 @@ public class CreateAltGorevRequest : IRequest<CreateAltGorevResponse>
 {
     public string Baslik { get; set; } = null!;
     public string? Aciklama { get; set; }
+    public DateTime? BaslangicTarihi { get; set; }
     public DateTime? TahminibitisTarihi { get; set; }
     public int GorevId { get; set; }
+    public AtamaTipi AtamaTipi { get; set; } = AtamaTipi.Kisi;
     public int? AtananKullaniciId { get; set; }
+    public int? AtananGrupId { get; set; }
 }
 
 public class CreateAltGorevResponse
@@ -41,25 +45,28 @@ public class CreateAltGorevHandler : IRequestHandler<CreateAltGorevRequest, Crea
         {
             Baslik = request.Baslik,
             Aciklama = request.Aciklama,
+            BaslangicTarihi = request.BaslangicTarihi,
             TahminibitisTarihi = request.TahminibitisTarihi,
             GorevId = request.GorevId,
-            AtananKullaniciId = request.AtananKullaniciId,
+            AtamaTipi = request.AtamaTipi,
+            AtananKullaniciId = request.AtamaTipi == AtamaTipi.Kisi ? request.AtananKullaniciId : null,
+            AtananGrupId = request.AtamaTipi == AtamaTipi.Grup ? request.AtananGrupId : null,
             Durum = GorevDurumu.YeniAtandi
         };
 
         await _unitOfWork.AltGorevWriteRepository.AddAsync(altGorev);
 
-        if (request.AtananKullaniciId.HasValue)
+        if (request.AtamaTipi == AtamaTipi.Kisi && request.AtananKullaniciId.HasValue)
         {
             await _unitOfWork.GorevAtamaLogWriteRepository.AddAsync(new GorevAtamaLog
             {
-                AltGorevId = altGorev.Id,
+                AltGorev = altGorev,
                 GorevId = request.GorevId,
                 AtamaTarihi = DateTime.UtcNow,
                 AtamaTipi = AtamaTipi.Kisi,
                 AtananKullaniciId = request.AtananKullaniciId,
                 AtayanKullaniciId = currentUserId,
-                Aciklama = "Alt görev oluşturuldu ve atandı"
+                Aciklama = "Alt görev oluşturuldu ve kişiye atandı"
             });
 
             await _unitOfWork.BildirimWriteRepository.AddAsync(new Bildirim
@@ -69,6 +76,19 @@ public class CreateAltGorevHandler : IRequestHandler<CreateAltGorevRequest, Crea
                 Tip = BildirimTipi.Atama,
                 KullaniciId = request.AtananKullaniciId.Value,
                 GorevId = request.GorevId
+            });
+        }
+        else if (request.AtamaTipi == AtamaTipi.Grup && request.AtananGrupId.HasValue)
+        {
+            await _unitOfWork.GorevAtamaLogWriteRepository.AddAsync(new GorevAtamaLog
+            {
+                AltGorev = altGorev,
+                GorevId = request.GorevId,
+                AtamaTarihi = DateTime.UtcNow,
+                AtamaTipi = AtamaTipi.Grup,
+                AtananGrupId = request.AtananGrupId,
+                AtayanKullaniciId = currentUserId,
+                Aciklama = "Alt görev oluşturuldu ve gruba atandı"
             });
         }
 
@@ -81,12 +101,16 @@ public class CreateAltGorevHandler : IRequestHandler<CreateAltGorevRequest, Crea
 public class UpdateAltGorevRequest : IRequest<UpdateAltGorevResponse>
 {
     public int Id { get; set; }
+    public int GorevId { get; set; }  // cache invalidation için
     public string Baslik { get; set; } = null!;
     public string? Aciklama { get; set; }
     public GorevDurumu Durum { get; set; }
+    public AtamaTipi AtamaTipi { get; set; } = AtamaTipi.Kisi;
+    public DateTime? BaslangicTarihi { get; set; }
     public DateTime? TahminibitisTarihi { get; set; }
     public DateTime? TamamlanmaTarihi { get; set; }
     public int? AtananKullaniciId { get; set; }
+    public int? AtananGrupId { get; set; }
 }
 
 public class UpdateAltGorevResponse { public bool Basarili { get; set; } public string? Mesaj { get; set; } }
@@ -105,9 +129,12 @@ public class UpdateAltGorevHandler : IRequestHandler<UpdateAltGorevRequest, Upda
         altGorev.Baslik = request.Baslik;
         altGorev.Aciklama = request.Aciklama;
         altGorev.Durum = request.Durum;
+        altGorev.AtamaTipi = request.AtamaTipi;
+        altGorev.BaslangicTarihi = request.BaslangicTarihi;
         altGorev.TahminibitisTarihi = request.TahminibitisTarihi;
         altGorev.TamamlanmaTarihi = request.TamamlanmaTarihi;
-        altGorev.AtananKullaniciId = request.AtananKullaniciId;
+        altGorev.AtananKullaniciId = request.AtamaTipi == AtamaTipi.Kisi ? request.AtananKullaniciId : null;
+        altGorev.AtananGrupId = request.AtamaTipi == AtamaTipi.Grup ? request.AtananGrupId : null;
 
         _unitOfWork.AltGorevWriteRepository.Update(altGorev);
         await _unitOfWork.SaveChangesAsync();

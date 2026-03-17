@@ -61,6 +61,37 @@ public class GetDashboardHandler : IRequestHandler<GetDashboardRequest, Dashboar
             .Where(k => k.ToplamGorev > 0)
             .ToListAsync(cancellationToken);
 
+        // Öncelik istatistikleri
+        var oncelikIstatistikleri = gorevler
+            .GroupBy(g => g.Oncelik)
+            .Select(g => new OncelikGorevIstatistikDto
+            {
+                OncelikAdi = g.Key.ToString(),
+                Adet = g.Count()
+            }).ToList();
+
+        // Tip istatistikleri
+        var tipIstatistikleri = gorevler
+            .GroupBy(g => g.GorevTipiId)
+            .Select(g => new GorevTipiIstatistikDto
+            {
+                TipAdi = g.FirstOrDefault()?.GorevTipi?.Ad ?? "Tanımsız",
+                Adet = g.Count()
+            }).ToList();
+
+        // Son 7 günlük trend
+        var sonYediGun = Enumerable.Range(0, 7)
+            .Select(i => DateTime.UtcNow.Date.AddDays(-i))
+            .Reverse()
+            .ToList();
+
+        var trendIstatistikleri = sonYediGun.Select(tarih => new GunlukGorevIstatistikDto
+        {
+            Tarih = tarih.ToString("dd/MM"),
+            Olusturulan = gorevler.Count(g => g.CreatedAt.Date == tarih),
+            Tamamlanan = gorevler.Count(g => g.TamamlanmaTarihi.HasValue && g.TamamlanmaTarihi.Value.Date == tarih)
+        }).ToList();
+
         return new DashboardDto
         {
             ToplamGorev = gorevler.Count,
@@ -70,7 +101,10 @@ public class GetDashboardHandler : IRequestHandler<GetDashboardRequest, Dashboar
             GecikenGorev = gorevler.Count(g => g.BitisTarihi.HasValue && g.BitisTarihi < DateTime.UtcNow && g.Durum != GorevDurumu.Tamamlandi && g.Durum != GorevDurumu.Iptal),
             OrtalamaKapanmaSuresiGun = Math.Round(ortalamaKapanma, 1),
             GrupIstatistikleri = grupIstatistikleri,
-            KisiIstatistikleri = kisiIstatistikleri
+            KisiIstatistikleri = kisiIstatistikleri,
+            OncelikIstatistikleri = oncelikIstatistikleri,
+            GorevTipiIstatistikleri = tipIstatistikleri,
+            GunlukGorevIstatistikleri = trendIstatistikleri
         };
     }
 }

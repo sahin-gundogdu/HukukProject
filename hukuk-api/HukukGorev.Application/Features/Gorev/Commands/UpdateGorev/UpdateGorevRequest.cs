@@ -11,6 +11,7 @@ public class UpdateGorevRequest : IRequest<UpdateGorevResponse>
     public OncelikSeviyesi Oncelik { get; set; }
     public GorevDurumu Durum { get; set; }
     public AtamaTipi AtamaTipi { get; set; }
+    public DateTime? BaslangicTarihi { get; set; }
     public DateTime? BitisTarihi { get; set; }
     public DateTime? TamamlanmaTarihi { get; set; }
     public int? GorevTipiId { get; set; }

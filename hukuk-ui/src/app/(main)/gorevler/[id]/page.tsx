@@ -1,16 +1,18 @@
 'use client';
 import React, { useState } from 'react';
-import { useGorev, useGorevUzerineAl, useCreateGorevYorum, useCreateAltGorev, useDeleteAltGorev, useUpdateAltGorev } from '@/layout/hooks/useApi';
+import { useGorev, useGorevUzerineAl, useCreateGorevYorum, useDeleteAltGorev, useUpdateAltGorev } from '@/layout/hooks/useApi';
 import { useAuth } from '@/layout/context/AuthContext';
 import { ProgressSpinner } from 'primereact/progressspinner';
 import { Button } from 'primereact/button';
 import { Tag } from 'primereact/tag';
 import { InputTextarea } from 'primereact/inputtextarea';
-import { InputText } from 'primereact/inputtext';
 import { TabView, TabPanel } from 'primereact/tabview';
+import { Dialog } from 'primereact/dialog';
 import { DURUM_LABELS, DURUM_SEVERITY, ONCELIK_LABELS, ONCELIK_SEVERITY, formatDate, formatDateTime, isOverdue } from '@/utils/formatters';
-import { GorevDurumu } from '@/types';
+import { GorevDurumu, AltGorevDto, AtamaTipi } from '@/types';
 import { useParams, useRouter } from 'next/navigation';
+import AltGorevForm from '../AltGorevForm';
+import { confirmDialog } from 'primereact/confirmdialog';
 
 export default function GorevDetayPage() {
     const params = useParams();
@@ -21,10 +23,12 @@ export default function GorevDetayPage() {
     const { data: gorev, isLoading } = useGorev(id);
     const uzerineAl = useGorevUzerineAl();
     const createYorum = useCreateGorevYorum();
-    const createAltGorev = useCreateAltGorev();
+    const deleteAltGorev = useDeleteAltGorev(id);
+    const updateAltGorev = useUpdateAltGorev();
 
     const [yorumIcerik, setYorumIcerik] = useState('');
-    const [altGorevBaslik, setAltGorevBaslik] = useState('');
+    const [showAltGorevForm, setShowAltGorevForm] = useState(false);
+    const [selectedAltGorev, setSelectedAltGorev] = useState<AltGorevDto | null>(null);
 
     if (isLoading) return <div className="page-loading"><ProgressSpinner /></div>;
     if (!gorev) return <div className="empty-state"><i className="pi pi-search" /><p>Görev bulunamadı</p></div>;
@@ -35,15 +39,34 @@ export default function GorevDetayPage() {
         setYorumIcerik('');
     };
 
-    const handleAltGorevEkle = async () => {
-        if (!altGorevBaslik.trim()) return;
-        await createAltGorev.mutateAsync({ baslik: altGorevBaslik, gorevId: id });
-        setAltGorevBaslik('');
-    };
-
     const handleUzerineAl = async () => {
         if (!user) return;
         await uzerineAl.mutateAsync({ gorevId: id, kullaniciId: user.id });
+    };
+
+    const handleDeleteAltGorev = (agId: number) => {
+        confirmDialog({
+            message: 'Bu alt görevi silmek istediğinizden emin misiniz?',
+            header: 'Alt Görev Silme',
+            icon: 'pi pi-exclamation-triangle',
+            acceptLabel: 'Evet, Sil',
+            rejectLabel: 'İptal',
+            accept: () => deleteAltGorev.mutate(agId),
+        });
+    };
+
+    const handleToggleAltGorevDurum = async (ag: AltGorevDto) => {
+        const yeniDurum = ag.durum === GorevDurumu.Tamamlandi ? GorevDurumu.YeniAtandi : GorevDurumu.Tamamlandi;
+        await updateAltGorev.mutateAsync({
+            id: ag.id,
+            gorevId: id,
+            baslik: ag.baslik,
+            durum: yeniDurum,
+            atamaTipi: ag.atamaTipi,
+            atananKullaniciId: ag.atananKullaniciId,
+            atananGrupId: ag.atananGrupId,
+            tamamlanmaTarihi: yeniDurum === GorevDurumu.Tamamlandi ? new Date().toISOString() : undefined,
+        });
     };
 
     return (
@@ -87,22 +110,54 @@ export default function GorevDetayPage() {
             <TabView>
                 {/* Alt Görevler */}
                 <TabPanel header={`Alt Görevler (${gorev.altGorevler?.length ?? 0})`} leftIcon="pi pi-list mr-2">
-                    <div style={{ marginBottom: '16px', display: 'flex', gap: '8px' }}>
-                        <InputText value={altGorevBaslik} onChange={e => setAltGorevBaslik(e.target.value)}
-                            placeholder="Yeni alt görev başlığı..." style={{ flex: 1 }} />
-                        <Button label="Ekle" icon="pi pi-plus" onClick={handleAltGorevEkle}
-                            loading={createAltGorev.isPending} disabled={!altGorevBaslik.trim()} />
+                    <div style={{ marginBottom: '16px', display: 'flex', justifyContent: 'flex-end' }}>
+                        <Button label="Alt Görev Ekle" icon="pi pi-plus" onClick={() => { setSelectedAltGorev(null); setShowAltGorevForm(true); }} />
                     </div>
+
                     {gorev.altGorevler?.length === 0 ? (
                         <div className="empty-state" style={{ padding: '30px' }}><i className="pi pi-list" /><p>Alt görev yok</p></div>
                     ) : (
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                             {gorev.altGorevler?.map(ag => (
                                 <div key={ag.id} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px', background: 'var(--surface-50)', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
-                                    <i className={ag.durum === GorevDurumu.Tamamlandi ? 'pi pi-check-circle' : 'pi pi-circle'} style={{ color: ag.durum === GorevDurumu.Tamamlandi ? 'var(--success)' : 'var(--surface-400)', fontSize: '1.2rem' }} />
-                                    <span style={{ flex: 1, fontWeight: 500, textDecoration: ag.durum === GorevDurumu.Tamamlandi ? 'line-through' : 'none' }}>{ag.baslik}</span>
-                                    <Tag value={DURUM_LABELS[ag.durum]} severity={DURUM_SEVERITY[ag.durum] as any} style={{ fontSize: '0.75rem' }} />
-                                    {ag.atananKullaniciAdi && <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>{ag.atananKullaniciAdi}</span>}
+                                    <Button
+                                        icon={ag.durum === GorevDurumu.Tamamlandi ? 'pi pi-check-circle' : 'pi pi-circle'}
+                                        className="p-button-text p-button-sm"
+                                        style={{ color: ag.durum === GorevDurumu.Tamamlandi ? 'var(--success)' : 'var(--surface-400)', padding: 0, minWidth: 'auto' }}
+                                        onClick={() => handleToggleAltGorevDurum(ag)}
+                                        loading={updateAltGorev.isPending}
+                                    />
+                                    <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+                                        <span style={{ fontWeight: 500, textDecoration: ag.durum === GorevDurumu.Tamamlandi ? 'line-through' : 'none' }}>{ag.baslik}</span>
+                                        {ag.aciklama && <small style={{ color: 'var(--text-secondary)' }}>{ag.aciklama}</small>}
+                                    </div>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                        <Tag value={DURUM_LABELS[ag.durum]} severity={DURUM_SEVERITY[ag.durum] as any} style={{ fontSize: '0.75rem' }} />
+                                        {(ag.atananKullaniciAdi || ag.atananGrupAdi) && (
+                                            <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                                <i className={ag.atamaTipi === AtamaTipi.Grup ? 'pi pi-users' : 'pi pi-user'} />
+                                                {ag.atananKullaniciAdi ?? ag.atananGrupAdi}
+                                            </span>
+                                        )}
+                                        {ag.baslangicTarihi && (
+                                            <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                                <i className="pi pi-calendar" />
+                                                {formatDate(ag.baslangicTarihi)}
+                                            </span>
+                                        )}
+                                        {ag.tahminibitisTarihi && (
+                                            <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                                <i className="pi pi-calendar-times" />
+                                                {formatDate(ag.tahminibitisTarihi)}
+                                            </span>
+                                        )}
+                                        <div style={{ display: 'flex', gap: '4px' }}>
+                                            <Button icon="pi pi-pencil" className="p-button-text p-button-sm p-button-secondary"
+                                                onClick={() => { setSelectedAltGorev(ag); setShowAltGorevForm(true); }} />
+                                            <Button icon="pi pi-trash" className="p-button-text p-button-sm p-button-danger"
+                                                onClick={() => handleDeleteAltGorev(ag.id)} />
+                                        </div>
+                                    </div>
                                 </div>
                             ))}
                         </div>
@@ -173,6 +228,11 @@ export default function GorevDetayPage() {
                     )}
                 </TabPanel>
             </TabView>
+
+            <Dialog header={selectedAltGorev ? 'Alt Görev Düzenle' : 'Yeni Alt Görev'} visible={showAltGorevForm}
+                onHide={() => { setShowAltGorevForm(false); setSelectedAltGorev(null); }} style={{ width: '500px' }} modal blockScroll>
+                <AltGorevForm gorevId={id} altGorev={selectedAltGorev} onClose={() => { setShowAltGorevForm(false); setSelectedAltGorev(null); }} />
+            </Dialog>
         </div>
     );
 }

@@ -9,6 +9,7 @@ public class CreateGorevRequest : IRequest<CreateGorevResponse>
     public string? Aciklama { get; set; }
     public OncelikSeviyesi Oncelik { get; set; } = OncelikSeviyesi.Orta;
     public AtamaTipi AtamaTipi { get; set; } = AtamaTipi.Kisi;
+    public DateTime? BaslangicTarihi { get; set; }
     public DateTime? BitisTarihi { get; set; }
     public int? GorevTipiId { get; set; }
     public int? AtananKullaniciId { get; set; }

@@ -49,6 +49,7 @@ export interface GorevDto {
     oncelik: OncelikSeviyesi;
     durum: GorevDurumu;
     atamaTipi: AtamaTipi;
+    baslangicTarihi?: string;
     bitisTarihi?: string;
     tamamlanmaTarihi?: string;
     gorevTipiId?: number;
@@ -80,11 +81,16 @@ export interface AltGorevDto {
     baslik: string;
     aciklama?: string;
     durum: GorevDurumu;
+    atamaTipi: AtamaTipi;
+    baslangicTarihi?: string;
     tahminibitisTarihi?: string;
     tamamlanmaTarihi?: string;
     atananKullaniciId?: number;
     atananKullaniciAdi?: string;
+    atananGrupId?: number;
+    atananGrupAdi?: string;
     gorevId: number;
+    createdAt: string;
 }
 
 // ===== GorevYorum =====
@@ -148,6 +154,25 @@ export interface DashboardDto {
     ortalamaKapanmaSuresiGun: number;
     grupIstatistikleri: GrupGorevIstatistikDto[];
     kisiIstatistikleri: KisiGorevIstatistikDto[];
+    oncelikIstatistikleri: OncelikGorevIstatistikDto[];
+    gunlukGorevIstatistikleri: GunlukGorevIstatistikDto[];
+    gorevTipiIstatistikleri: GorevTipiIstatistikDto[];
+}
+
+export interface OncelikGorevIstatistikDto {
+    oncelikAdi: string;
+    adet: number;
+}
+
+export interface GunlukGorevIstatistikDto {
+    tarih: string;
+    olusturulan: number;
+    tamamlanan: number;
+}
+
+export interface GorevTipiIstatistikDto {
+    tipAdi: string;
+    adet: number;
 }
 
 export interface GrupGorevIstatistikDto {
@@ -196,6 +221,7 @@ export interface CreateGorevRequest {
     aciklama?: string;
     oncelik: OncelikSeviyesi;
     atamaTipi: AtamaTipi;
+    baslangicTarihi?: string;
     bitisTarihi?: string;
     gorevTipiId?: number;
     atananKullaniciId?: number;
@@ -206,6 +232,7 @@ export interface CreateGorevRequest {
 export interface UpdateGorevRequest extends CreateGorevRequest {
     id: number;
     durum: GorevDurumu;
+    baslangicTarihi?: string;
     tamamlanmaTarihi?: string;
 }
 
@@ -213,13 +240,24 @@ export interface UpdateGorevRequest extends CreateGorevRequest {
 export interface CreateAltGorevRequest {
     baslik: string;
     aciklama?: string;
+    baslangicTarihi?: string;
     tahminibitisTarihi?: string;
     gorevId: number;
+    atamaTipi: AtamaTipi;
     atananKullaniciId?: number;
+    atananGrupId?: number;
 }
 
-export interface UpdateAltGorevRequest extends CreateAltGorevRequest {
+export interface UpdateAltGorevRequest {
     id: number;
+    gorevId: number;
+    baslik: string;
+    aciklama?: string;
+    baslangicTarihi?: string;
+    tahminibitisTarihi?: string;
     durum: GorevDurumu;
     tamamlanmaTarihi?: string;
+    atamaTipi: AtamaTipi;
+    atananKullaniciId?: number;
+    atananGrupId?: number;
 }

@@ -32,6 +32,7 @@ public class GetGorevByIdHandler : IRequestHandler<GetGorevByIdRequest, GorevDet
             .Include(g => g.OlusturanKullanici)
             .Include(g => g.UzerineAlanKullanici)
             .Include(g => g.AltGorevler).ThenInclude(a => a.AtananKullanici)
+            .Include(g => g.AltGorevler).ThenInclude(a => a.AtananGrup)
             .Include(g => g.Yorumlar).ThenInclude(y => y.Kullanici)
             .Include(g => g.Dosyalar)
             .Include(g => g.GorevEtiketler).ThenInclude(ge => ge.Etiket)

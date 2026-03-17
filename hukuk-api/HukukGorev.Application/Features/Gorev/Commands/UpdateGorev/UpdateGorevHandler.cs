@@ -32,6 +32,7 @@ public class UpdateGorevHandler : IRequestHandler<UpdateGorevRequest, UpdateGore
         gorev.Oncelik = request.Oncelik;
         gorev.Durum = request.Durum;
         gorev.AtamaTipi = request.AtamaTipi;
+        gorev.BaslangicTarihi = request.BaslangicTarihi;
         gorev.BitisTarihi = request.BitisTarihi;
         gorev.TamamlanmaTarihi = request.TamamlanmaTarihi;
         gorev.GorevTipiId = request.GorevTipiId;

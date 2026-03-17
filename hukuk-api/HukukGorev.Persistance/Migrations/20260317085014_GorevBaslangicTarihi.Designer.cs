@@ -4,6 +4,7 @@ using HukukGorev.Persistance.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HukukGorev.Persistance.Migrations
 {
     [DbContext(typeof(HukukGorevDbContext))]
-    partial class HukukGorevDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260317085014_GorevBaslangicTarihi")]
+    partial class GorevBaslangicTarihi
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -50,10 +53,6 @@ namespace HukukGorev.Persistance.Migrations
                     b.Property<int?>("AtananKullaniciId")
                         .HasColumnType("int")
                         .HasColumnName("ATANANKULLANICIID");
-
-                    b.Property<DateTime?>("BaslangicTarihi")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("BASLANGICTARIHI");
 
                     b.Property<string>("Baslik")
                         .IsRequired()

@@ -29,7 +29,8 @@ public class Profiles : Profile
 
         // AltGorev
         CreateMap<AltGorev, AltGorevDto>()
-            .ForMember(d => d.AtananKullaniciAdi, opt => opt.MapFrom(s => s.AtananKullanici != null ? s.AtananKullanici.Ad + " " + s.AtananKullanici.Soyad : null));
+            .ForMember(d => d.AtananKullaniciAdi, opt => opt.MapFrom(s => s.AtananKullanici != null ? s.AtananKullanici.Ad + " " + s.AtananKullanici.Soyad : null))
+            .ForMember(d => d.AtananGrupAdi, opt => opt.MapFrom(s => s.AtananGrup != null ? s.AtananGrup.Ad : null));
 
         // GorevYorum
         CreateMap<GorevYorum, GorevYorumDto>()

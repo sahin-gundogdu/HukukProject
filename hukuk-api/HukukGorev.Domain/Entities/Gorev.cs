@@ -10,6 +10,7 @@ public class Gorev : AuditableEntity
     public OncelikSeviyesi Oncelik { get; set; } = OncelikSeviyesi.Orta;
     public GorevDurumu Durum { get; set; } = GorevDurumu.YeniAtandi;
     public AtamaTipi AtamaTipi { get; set; } = AtamaTipi.Kisi;
+    public DateTime? BaslangicTarihi { get; set; }
     public DateTime? BitisTarihi { get; set; }
     public DateTime? TamamlanmaTarihi { get; set; }
     public bool HatirlatmaGonderildiOrtasi { get; set; } = false;

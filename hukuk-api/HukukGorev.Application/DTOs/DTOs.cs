@@ -11,6 +11,7 @@ public class GorevDto
     public OncelikSeviyesi Oncelik { get; set; }
     public GorevDurumu Durum { get; set; }
     public AtamaTipi AtamaTipi { get; set; }
+    public DateTime? BaslangicTarihi { get; set; }
     public DateTime? BitisTarihi { get; set; }
     public DateTime? TamamlanmaTarihi { get; set; }
     public int? GorevTipiId { get; set; }
@@ -47,11 +48,15 @@ public class AltGorevDto
     public string Baslik { get; set; } = null!;
     public string? Aciklama { get; set; }
     public GorevDurumu Durum { get; set; }
+    public AtamaTipi AtamaTipi { get; set; }
+    public DateTime? BaslangicTarihi { get; set; }
     public DateTime? TahminibitisTarihi { get; set; }
     public DateTime? TamamlanmaTarihi { get; set; }
     public int GorevId { get; set; }
     public int? AtananKullaniciId { get; set; }
     public string? AtananKullaniciAdi { get; set; }
+    public int? AtananGrupId { get; set; }
+    public string? AtananGrupAdi { get; set; }
     public DateTime CreatedAt { get; set; }
     public bool Aktif { get; set; }
 }
@@ -167,6 +172,28 @@ public class DashboardDto
     public double OrtalamaKapanmaSuresiGun { get; set; }
     public List<GrupGorevIstatistikDto>? GrupIstatistikleri { get; set; }
     public List<KisiGorevIstatistikDto>? KisiIstatistikleri { get; set; }
+    public List<OncelikGorevIstatistikDto>? OncelikIstatistikleri { get; set; }
+    public List<GunlukGorevIstatistikDto>? GunlukGorevIstatistikleri { get; set; }
+    public List<GorevTipiIstatistikDto>? GorevTipiIstatistikleri { get; set; }
+}
+
+public class OncelikGorevIstatistikDto
+{
+    public string OncelikAdi { get; set; } = null!;
+    public int Adet { get; set; }
+}
+
+public class GunlukGorevIstatistikDto
+{
+    public string Tarih { get; set; } = null!;
+    public int Olusturulan { get; set; }
+    public int Tamamlanan { get; set; }
+}
+
+public class GorevTipiIstatistikDto
+{
+    public string TipAdi { get; set; } = null!;
+    public int Adet { get; set; }
 }
 
 public class GrupGorevIstatistikDto

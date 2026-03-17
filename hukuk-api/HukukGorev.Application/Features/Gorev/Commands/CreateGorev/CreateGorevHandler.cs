@@ -28,6 +28,7 @@ public class CreateGorevHandler : IRequestHandler<CreateGorevRequest, CreateGore
             Oncelik = request.Oncelik,
             Durum = GorevDurumu.YeniAtandi,
             AtamaTipi = request.AtamaTipi,
+            BaslangicTarihi = request.BaslangicTarihi,
             BitisTarihi = request.BitisTarihi,
             GorevTipiId = request.GorevTipiId,
             AtananKullaniciId = request.AtananKullaniciId,

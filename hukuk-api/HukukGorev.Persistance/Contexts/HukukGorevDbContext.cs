@@ -68,6 +68,7 @@ public class HukukGorevDbContext : DbContext
         {
             entity.HasOne(a => a.Gorev).WithMany(g => g.AltGorevler).HasForeignKey(a => a.GorevId).OnDelete(DeleteBehavior.Cascade);
             entity.HasOne(a => a.AtananKullanici).WithMany().HasForeignKey(a => a.AtananKullaniciId).OnDelete(DeleteBehavior.Restrict);
+            entity.HasOne(a => a.AtananGrup).WithMany().HasForeignKey(a => a.AtananGrupId).OnDelete(DeleteBehavior.Restrict);
             entity.Property(a => a.Baslik).HasMaxLength(500).IsRequired();
         });
 
