@@ -1,15 +1,29 @@
 'use client';
-import React from 'react';
+import React, { useState } from 'react';
 import { useDashboard, useGorevler } from '@/layout/hooks/useApi';
 import { ProgressSpinner } from 'primereact/progressspinner';
 import { Chart } from 'primereact/chart';
+import { Button } from 'primereact/button';
+import { Dialog } from 'primereact/dialog';
+import { DataTable } from 'primereact/datatable';
+import { Column } from 'primereact/column';
 import { DURUM_LABELS, ONCELIK_LABELS, formatDate } from '@/utils/formatters';
-import { OncelikSeviyesi } from '@/types';
+import { OncelikSeviyesi, GorevDurumu } from '@/types';
 import Link from 'next/link';
 
 export default function DashboardPage() {
     const { data: dashboard, isLoading } = useDashboard();
     const { data: gecikenGorevler } = useGorevler({ sadeceGecikenler: true });
+
+    const [detailsVisible, setDetailsVisible] = useState(false);
+    const [detailFilters, setDetailFilters] = useState<any>(null);
+    const [detailTitle, setDetailTitle] = useState('');
+
+    const { data: detailGorevler, isLoading: isDetailsLoading } = useGorevler(detailFilters || {});
+
+    const onChartSelect = () => {
+        // Developer updated: Removed as per user request, using "Details" button instead.
+    };
 
     if (isLoading) {
         return <div className="page-loading"><ProgressSpinner /></div>;
@@ -70,8 +84,13 @@ export default function DashboardPage() {
     };
 
     // Priority (Doughnut)
+    const sortedOncelikStats = [...dashboard.oncelikIstatistikleri].sort((a, b) => {
+        const order = ['Dusuk', 'Orta', 'Yuksek', 'Kritik'];
+        return order.indexOf(a.oncelikAdi) - order.indexOf(b.oncelikAdi);
+    });
+
     const priorityChartData = {
-        labels: dashboard.oncelikIstatistikleri.map(p => {
+        labels: sortedOncelikStats.map(p => {
             const labelMap: Record<string, string> = {
                 'Dusuk': 'Düşük',
                 'Orta': 'Orta',
@@ -81,7 +100,7 @@ export default function DashboardPage() {
             return labelMap[p.oncelikAdi] || p.oncelikAdi;
         }),
         datasets: [{
-            data: dashboard.oncelikIstatistikleri.map(p => p.adet),
+            data: sortedOncelikStats.map(p => p.adet),
             backgroundColor: ['#10b981', '#3b82f6', '#f59e0b', '#ef4444'],
             borderWidth: 0
         }]
@@ -90,8 +109,20 @@ export default function DashboardPage() {
     const chartOptions = {
         plugins: {
             legend: {
+                display: true,
                 position: 'bottom',
-                labels: { color: '#ffffff', font: { size: 12 } }
+                labels: {
+                    color: '#e2e8f0', // Daha belirgin bir gri/beyaz
+                    usePointStyle: true,
+                    padding: 20,
+                    font: {
+                        size: 13,
+                        family: 'inherit'
+                    }
+                }
+            },
+            tooltip: {
+                enabled: true
             }
         },
         maintainAspectRatio: false
@@ -174,7 +205,19 @@ export default function DashboardPage() {
 
                 {/* Status Pie */}
                 <div className="glass-panel" style={{ display: 'flex', flexDirection: 'column' }}>
-                    <h3 className="section-title"><i className="pi pi-chart-pie" /> Durum Dağılımı</h3>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
+                        <h3 className="section-title" style={{ marginBottom: 0 }}><i className="pi pi-chart-pie" /> Durum Dağılımı</h3>
+                        <Button 
+                            icon="pi pi-external-link" 
+                            className="p-button-text p-button-sm" 
+                            label="Detaylar" 
+                            onClick={() => {
+                                setDetailTitle('Tüm Görevler (Durum)');
+                                setDetailFilters({});
+                                setDetailsVisible(true);
+                            }} 
+                        />
+                    </div>
                     <div style={{ height: '250px', flex: 1 }}>
                         <Chart type="pie" data={statusChartData} options={chartOptions} />
                     </div>
@@ -182,7 +225,19 @@ export default function DashboardPage() {
 
                 {/* Priority Doughnut */}
                 <div className="glass-panel" style={{ display: 'flex', flexDirection: 'column' }}>
-                    <h3 className="section-title"><i className="pi pi-chart-doughnut" /> Öncelik Dağılımı</h3>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
+                        <h3 className="section-title" style={{ marginBottom: 0 }}><i className="pi pi-chart-doughnut" /> Öncelik Dağılımı</h3>
+                        <Button 
+                            icon="pi pi-external-link" 
+                            className="p-button-text p-button-sm" 
+                            label="Detaylar" 
+                            onClick={() => {
+                                setDetailTitle('Tüm Görevler (Öncelik)');
+                                setDetailFilters({});
+                                setDetailsVisible(true);
+                            }} 
+                        />
+                    </div>
                     <div style={{ height: '250px', flex: 1 }}>
                         <Chart type="doughnut" data={priorityChartData} options={chartOptions} />
                     </div>
@@ -240,6 +295,33 @@ export default function DashboardPage() {
                     </div>
                 </div>
             </div>
+
+            {/* Details Dialog */}
+            <Dialog 
+                header={detailTitle} 
+                visible={detailsVisible} 
+                style={{ width: '80vw' }} 
+                onHide={() => { setDetailsVisible(false); setDetailFilters(null); }}
+            >
+                <DataTable 
+                    value={detailGorevler || []} 
+                    loading={isDetailsLoading}
+                    paginator rows={10} 
+                    className="p-datatable-sm"
+                    emptyMessage="Bu kategoride görev bulunamadı."
+                    stripedRows
+                >
+                    <Column field="baslik" header="Başlık" body={(rowData) => (
+                        <Link href={`/gorevler/${rowData.id}`} style={{ color: 'var(--primary)', fontWeight: 600, textDecoration: 'none' }}>
+                            {rowData.baslik}
+                        </Link>
+                    )} />
+                    <Column field="durum" header="Durum" body={(rowData) => DURUM_LABELS[rowData.durum as GorevDurumu]} />
+                    <Column field="oncelik" header="Öncelik" body={(rowData) => ONCELIK_LABELS[rowData.oncelik as OncelikSeviyesi]} />
+                    <Column field="atananKullaniciAdi" header="Atanan" body={(rowData) => rowData.atananKullaniciAdi ?? rowData.atananGrupAdi ?? '-'} />
+                    <Column field="bitisTarihi" header="Bitiş Tarihi" body={(rowData) => formatDate(rowData.bitisTarihi)} />
+                </DataTable>
+            </Dialog>
 
             <style jsx>{`
                 .section-title {
