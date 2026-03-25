@@ -5,6 +5,7 @@ using HukukGorev.Application.UnitOfWork;
 using HukukGorev.Domain.Enums;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using HukukGorev.Application.Abstraction;
 
 namespace HukukGorev.Application.Features.Gorev.Queries.GetAllGorev;
 
@@ -25,17 +26,31 @@ public class GetAllGorevHandler : IRequestHandler<GetAllGorevRequest, List<Gorev
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
+    private readonly IUserPermissionService _userPermissionService;
 
-    public GetAllGorevHandler(IUnitOfWork unitOfWork, IMapper mapper)
+    public GetAllGorevHandler(IUnitOfWork unitOfWork, IMapper mapper, IUserPermissionService userPermissionService)
     {
         _unitOfWork = unitOfWork;
         _mapper = mapper;
+        _userPermissionService = userPermissionService;
     }
 
     public async Task<List<GorevDto>> Handle(GetAllGorevRequest request, CancellationToken cancellationToken)
     {
+        var currentUserId = await _userPermissionService.GetCurrentUserId();
+        var isManagerOrAdmin = await _userPermissionService.HasPermission(currentUserId, "Admin");
+
         var query = _unitOfWork.GorevReadRepository.GetAllQueryable()
             .Where(g => g.Aktif);
+
+        // Hierarchical filtering for non-admin users
+        if (!isManagerOrAdmin)
+        {
+            var subordinateIds = await _userPermissionService.GetSubordinateIdsAsync(currentUserId);
+            var visibleUserIds = new List<int>(subordinateIds) { currentUserId };
+            
+            query = query.Where(g => g.AtananKullaniciId.HasValue && visibleUserIds.Contains(g.AtananKullaniciId.Value));
+        }
 
         if (request.Durum.HasValue)
             query = query.Where(g => g.Durum == request.Durum.Value);

@@ -10,7 +10,7 @@ import { Button } from 'primereact/button';
 import { Tag } from 'primereact/tag';
 import { Dialog } from 'primereact/dialog';
 import { useCreateGorev, useUpdateGorev, useGorevTipleri, useGruplar, useKullanicilar, useEtiketler, useCreateAltGorev } from '@/layout/hooks/useApi';
-import { GorevDto, OncelikSeviyesi, AtamaTipi, GorevDurumu, CreateGorevRequest, UpdateGorevRequest, KullaniciRolu, CreateAltGorevRequest } from '@/types';
+import { GorevDto, OncelikSeviyesi, AtamaTipi, GorevDurumu, CreateGorevRequest, UpdateGorevRequest, CreateAltGorevRequest } from '@/types';
 import { ONCELIK_LABELS, DURUM_LABELS } from '@/utils/formatters';
 import { useAuth } from '@/layout/context/AuthContext';
 import { useQueryClient } from '@tanstack/react-query';
@@ -222,17 +222,11 @@ export default function GorevForm({ gorev, onClose }: Props) {
                         <div>
                             <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, marginBottom: '4px' }}>Atanacak Kişi</label>
                             <Controller name="atananKullaniciId" control={control}
-                                render={({ field }) => {
-                                    const assignableUsers = kullanicilar?.filter(k =>
-                                        currentUser?.rol === KullaniciRolu.Admin ||
-                                        k.id === currentUser?.id ||
-                                        k.yoneticiId === currentUser?.id
-                                    ) ?? [];
-                                    return (
-                                        <Dropdown {...field} options={assignableUsers.map(k => ({ label: `${k.ad} ${k.soyad}`, value: k.id }))}
+                                render={({ field }) => (
+                                    <Dropdown {...field} 
+                                        options={kullanicilar?.map(k => ({ label: `${k.ad} ${k.soyad}`, value: k.id })) ?? []}
                                             placeholder="Kişi seçin" showClear filter style={{ width: '100%' }} />
-                                    );
-                                }} />
+                                    )} />
                         </div>
                     ) : (
                         <div>

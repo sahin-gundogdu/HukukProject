@@ -24,7 +24,6 @@ type ViewMode = 'liste' | 'kanban';
 
 const VIEW_OPTIONS = [
     { label: 'Liste', value: 'liste', icon: 'pi pi-list' },
-    { label: 'Kanban', value: 'kanban', icon: 'pi pi-th-large' },
 ];
 
 // Alt görev satırını gösteren bileşen (lazy load ile gorev detayını çeker)
@@ -317,8 +316,20 @@ export default function GorevlerPage() {
             {row.altGorevSayisi > 0 ? (
                 <Button
                     icon={expandedRows[row.id] ? 'pi pi-chevron-down' : 'pi pi-chevron-right'}
-                    className="p-button-text p-button-sm"
-                    style={{ padding: '2px 4px', color: 'var(--text-secondary)', flexShrink: 0 }}
+                    className="p-button-rounded p-button-text p-button-sm"
+                    style={{ 
+                        width: '24px', 
+                        height: '24px', 
+                        padding: 0,
+                        color: 'var(--primary-color)', 
+                        border: '1px solid var(--primary-100)',
+                        backgroundColor: 'var(--primary-50)',
+                        flexShrink: 0,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontSize: '0.8rem'
+                    }}
                     tooltip={expandedRows[row.id] ? 'Alt görevleri gizle' : `${row.altGorevSayisi} alt görev`}
                     onClick={(e) => {
                         e.stopPropagation();

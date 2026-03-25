@@ -1063,14 +1063,12 @@ textarea.p-inputtextarea {
     color: var(--surface-500);
 }
 
-/* ===== Kanban Board ===== */
 .kanban-board {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
     gap: 16px;
-    min-height: 60vh;
-    overflow-x: auto;
-    padding-bottom: 8px;
+    min-height: 70vh;
+    padding-bottom: 24px;
 }
 
 .kanban-column {
@@ -1081,7 +1079,8 @@ textarea.p-inputtextarea {
     border: 1px solid var(--surface-border);
     min-width: 240px;
     transition: box-shadow 0.2s, border-color 0.2s;
-    overflow: hidden;
+    /* overflow: hidden; */ /* Removing this to allow card shadows to be visible */
+    height: fit-content;
 }
 
 .kanban-column.drag-over {
@@ -1132,9 +1131,9 @@ textarea.p-inputtextarea {
     display: flex;
     flex-direction: column;
     gap: 10px;
-    min-height: 100px;
-    overflow-y: auto;
-    max-height: calc(100vh - 320px);
+    min-height: 150px;
+    /* overflow-y: auto; */
+    /* max-height: calc(100vh - 320px); */
 }
 
 /* Kanban Card */
@@ -1186,6 +1185,7 @@ textarea.p-inputtextarea {
     line-height: 1.4;
     display: -webkit-box;
     -webkit-line-clamp: 2;
+    line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
     transition: color 0.15s;

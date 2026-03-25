@@ -67,6 +67,9 @@ export default function KanbanBoard({ gorevler }: KanbanBoardProps) {
     );
 
     const handleDragStart = (e: React.DragEvent, gorev: GorevDto) => {
+        const target = e.currentTarget as HTMLElement;
+        
+        // Görev verilerini set et
         e.dataTransfer.setData('text/plain', JSON.stringify({
             id: gorev.id,
             baslik: gorev.baslik,
@@ -80,7 +83,17 @@ export default function KanbanBoard({ gorevler }: KanbanBoardProps) {
             atananGrupId: gorev.atananGrupId,
             etiketIds: [],
         }));
+        
         e.dataTransfer.effectAllowed = 'move';
+        
+        // Sürükleme görüntüsünü ayarla (tüm kartın görünmesini sağlar)
+        if (target) {
+            // Mouse pozisyonuna göre ofset belirle (kartın ortasından tutuluyormuş gibi)
+            const rect = target.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            e.dataTransfer.setDragImage(target, x, y);
+        }
     };
 
     const handleDragOver = (e: React.DragEvent, durum: GorevDurumu) => {

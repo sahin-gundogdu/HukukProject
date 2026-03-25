@@ -11,6 +11,7 @@ const AppMenu = () => {
             items: [
                 { label: 'Dashboard', icon: 'pi pi-fw pi-home', to: '/dashboard' },
                 { label: 'Görevler', icon: 'pi pi-fw pi-list', to: '/gorevler' },
+                { label: 'Kanban', icon: 'pi pi-fw pi-th-large', to: '/kanban' },
             ],
         },
         {

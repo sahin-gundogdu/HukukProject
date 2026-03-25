@@ -6,6 +6,7 @@ using HukukGorev.Domain.Entities;
 using HukukGorev.Domain.Enums;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using HukukGorev.Application.Abstraction;
 
 namespace HukukGorev.Application.Features.GenericCrud;
 
@@ -197,11 +198,37 @@ public class UpdateAyarHandler : IRequestHandler<UpdateAyarRequest, AyarDto>
 public class GetAllKullaniciRequest : IRequest<List<KullaniciDto>> { }
 public class GetAllKullaniciHandler : IRequestHandler<GetAllKullaniciRequest, List<KullaniciDto>>
 {
-    private readonly IUnitOfWork _uow; private readonly IMapper _mapper;
-    public GetAllKullaniciHandler(IUnitOfWork uow, IMapper mapper) { _uow = uow; _mapper = mapper; }
+    private readonly IUnitOfWork _uow;
+    private readonly IMapper _mapper;
+    private readonly IUserPermissionService _userPermissionService;
+
+    public GetAllKullaniciHandler(IUnitOfWork uow, IMapper mapper, IUserPermissionService userPermissionService)
+    {
+        _uow = uow;
+        _mapper = mapper;
+        _userPermissionService = userPermissionService;
+    }
+
     public async Task<List<KullaniciDto>> Handle(GetAllKullaniciRequest r, CancellationToken ct)
     {
-        var list = await _uow.KullaniciReadRepository.GetAllQueryable().Include(k => k.KullaniciGruplari).ThenInclude(kg => kg.Grup).Where(k => k.Aktif).ToListAsync(ct);
+        var currentUserId = await _userPermissionService.GetCurrentUserId();
+        var isManagerOrAdmin = await _userPermissionService.HasPermission(currentUserId, "Admin");
+
+        var query = _uow.KullaniciReadRepository.GetAllQueryable()
+            .Include(k => k.KullaniciGruplari)
+            .ThenInclude(kg => kg.Grup)
+            .Where(k => k.Aktif);
+
+        // Hierarchical filtering for non-admin users
+        if (!isManagerOrAdmin)
+        {
+            var subordinateIds = await _userPermissionService.GetSubordinateIdsAsync(currentUserId);
+            var visibleUserIds = new List<int>(subordinateIds) { currentUserId };
+            
+            query = query.Where(k => visibleUserIds.Contains(k.Id));
+        }
+
+        var list = await query.ToListAsync(ct);
         return _mapper.Map<List<KullaniciDto>>(list);
     }
 }
